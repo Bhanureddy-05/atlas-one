@@ -63,31 +63,6 @@ class BackupEngine:
         "r2": R2Provider()
     }
 
-    @staticmethod
-    def generate_sqlite_backup() -> str:
-        """Compresses the SQLite database file and returns the path to the backup file."""
-        db_path = "lifeos.db"
-        if not os.path.exists(db_path):
-            # Fallback to local search if executed in alternate Cwd
-            db_path = os.path.join(os.path.dirname(__file__), "..", "..", "lifeos.db")
-            
-        if not os.path.exists(db_path):
-            # If missing, write a dummy payload
-            with open("lifeos.db", "w") as f:
-                f.write("mock_db_content")
-            db_path = "lifeos.db"
-
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_filename = f"lifeos_db_backup_{timestamp}.db.gz"
-        dest_path = os.path.join(BACKUP_DIR, backup_filename)
-
-        # Compress DB file using gzip
-        with open(db_path, "rb") as f_in:
-            with gzip.open(dest_path, "wb") as f_out:
-                shutil.copyfileobj(f_in, f_out)
-
-        logger.info(f"Compressed SQLite database saved to {dest_path}")
-        return dest_path
 
     @staticmethod
     def generate_encrypted_json_backup(data: Dict[str, Any]) -> str:

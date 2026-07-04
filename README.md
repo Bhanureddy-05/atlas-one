@@ -5,14 +5,14 @@
 ![BHANOVA](https://img.shields.io/badge/BHANOVA-v5.0.0-6366f1?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi)
-![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-316192?style=for-the-badge&logo=postgresql)
 ![PWA](https://img.shields.io/badge/PWA-Supported-0284c7?style=for-the-badge&logo=pwa)
 
 ---
 
 ## 🚀 Quick Start (Local Run)
 
-No external database installation is required. Everything runs locally on standard Python and Node.js.
+A PostgreSQL database is required. Provide the database connection URL via the DATABASE_URL environment variable.
 
 ### 1. Run the Backend Server
 ```bash
@@ -51,7 +51,7 @@ npm run dev
 graph TD
     Client[React Frontend Single Page App / PWA] -->|HTTP Requests / JSON / multipart| API[FastAPI Backend Server]
     Client -->|Static Cache| SW[Service Worker & Cache Storage]
-    API -->|ORM queries| SQLite[(SQLite Database - lifeos.db)]
+    API -->|ORM queries| DB[(PostgreSQL Database)]
     API -->|SMTP| MailServer[Mime Mail Server]
     API -->|Strategy Pattern| CloudBackup[AWS S3 / Drive / OneDrive / Dropbox / R2]
 ```
@@ -59,13 +59,13 @@ graph TD
 * **Frontend SPA**: React 19, Vite, TailwindCSS v4, Recharts, Zustand, TanStack Query, and Framer Motion for premium UI transitions.
 * **Service Worker**: Cache-first asset caching handles offline capability and links to PWA web manifest.
 * **Backend API**: FastAPI serving modular router endpoints for users, habits, study plans, DSA problem tracking, goals, fitness diaries, and system backups.
-* **Database**: Local SQLite instance (`lifeos.db`) managed via SQLAlchemy 2.0 ORM, featuring auto-seeding on fresh start.
+* **Database**: PostgreSQL instance managed via SQLAlchemy 2.0 ORM, featuring auto-seeding on fresh start.
 
 ---
 
 ## 🗄️ Database Schema & ORM Relationships
 
-The SQLite database structure contains linked tables mapping personal logging metrics to the `users` credentials.
+The database structure contains linked tables mapping personal logging metrics to the `users` credentials.
 
 ```mermaid
 erDiagram
@@ -126,7 +126,7 @@ GARMIN_CONSUMER_KEY=your_garmin_key
 ```
 
 ### 4. Cloud Backup (AWS S3 / R2 Bucket):
-Used to upload compressed SQLite and encrypted JSON archives.
+Used to upload encrypted JSON archives.
 ```env
 AWS_ACCESS_KEY_ID=your_aws_s3_key_id
 AWS_SECRET_ACCESS_KEY=your_aws_s3_secret_key

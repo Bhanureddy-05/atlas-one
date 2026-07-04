@@ -169,7 +169,7 @@ def seed_data():
             ("Movie Recommendation System", "Python, Collaborative Filtering", "in_progress", 65),
             ("Stock Price Predictor", "Python, LSTM, Keras", "in_progress", 40),
             ("NLP Sentiment Analyzer", "Python, NLTK, Transformers", "planning", 10),
-            ("LifeOS Dashboard", "React, FastAPI, SQLite", "in_progress", 80),
+            ("LifeOS Dashboard", "React, FastAPI, PostgreSQL", "in_progress", 80),
         ]
         for name, tech, status, prog in projects_data:
             db.add(Project(

@@ -57,7 +57,7 @@ def link_google_calendar(
     if not payload.auth_code:
         raise HTTPException(status_code=400, detail="Invalid authorization code")
         
-    # Save mock tokens for local SQLite database representation
+    # Save mock tokens for local database representation
     # In a full configuration, this makes a POST request to https://oauth2.googleapis.com/token
     expires = datetime.utcnow() + timedelta(hours=1)
     
