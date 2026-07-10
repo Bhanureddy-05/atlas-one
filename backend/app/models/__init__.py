@@ -20,6 +20,7 @@ from app.models.progress_photo import ProgressPhoto
 from app.models.smartwatch import SmartwatchSync
 from app.models.google_calendar import GoogleCalendarCredential
 from app.models.sharing import FamilyGroup, GroupMembership, GroupInvitation, SharedGoal
+from app.models.ml import MLModelVersion, MLPredictionHistory, MLRecommendationHistory, MLSimulationLog
 
 __all__ = [
     "User", "Habit", "HabitLog", "StudyTopic", "StudySession",
@@ -30,5 +31,6 @@ __all__ = [
     "JournalEntry", "FinanceLog", "JobApplication", "MastersPrep",
     "UniversityShortlist", "KnowledgeItem", "VoiceJournal", "ProgressPhoto",
     "SmartwatchSync", "GoogleCalendarCredential", "FamilyGroup",
-    "GroupMembership", "GroupInvitation", "SharedGoal"
+    "GroupMembership", "GroupInvitation", "SharedGoal",
+    "MLModelVersion", "MLPredictionHistory", "MLRecommendationHistory", "MLSimulationLog"
 ]

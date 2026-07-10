@@ -1,18 +1,40 @@
+# =========================
 # Python
+# =========================
 backend/venv/
 __pycache__/
-*.pyc
+*.py[cod]
 *.db
 .env
+.env.*
 
-# Node
+# =========================
+# Node.js
+# =========================
 frontend/node_modules/
 frontend/dist/
+*.tsbuildinfo
+npm-debug.log*
 
+# =========================
 # IDE
+# =========================
 .vscode/
 .idea/
 
+# =========================
 # OS
+# =========================
 Thumbs.db
 .DS_Store
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Uploads (optional)
+# =========================
+backend/uploads/*
+!backend/uploads/.gitkeep

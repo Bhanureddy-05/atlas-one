@@ -6,14 +6,14 @@ from typing import Dict, Any, Optional
 import logging
 from app.utils.scheduler import scheduler
 
-logger = logging.getLogger("LifeOS-Email")
+logger = logging.getLogger("Atlas-One-Email")
 
 # SMTP Server Configurations (Placeholder Defaults, Override in .env)
-SMTP_HOST = os.getenv("LIFEOS_SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("LIFEOS_SMTP_PORT", "587"))
-SMTP_USER = os.getenv("LIFEOS_SMTP_USER", "your_smtp_email_here@gmail.com")
-SMTP_PASSWORD = os.getenv("LIFEOS_SMTP_PASSWORD", "your_smtp_app_password_here")
-SENDER_EMAIL = os.getenv("LIFEOS_SENDER_EMAIL", "lifeos-noreply@lifeos.app")
+SMTP_HOST = os.getenv("ATLAS_ONE_SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("ATLAS_ONE_SMTP_PORT", "587"))
+SMTP_USER = os.getenv("ATLAS_ONE_SMTP_USER", "your_smtp_email_here@gmail.com")
+SMTP_PASSWORD = os.getenv("ATLAS_ONE_SMTP_PASSWORD", "your_smtp_app_password_here")
+SENDER_EMAIL = os.getenv("ATLAS_ONE_SENDER_EMAIL", "atlas-one-noreply@atlasone.app")
 
 class EmailEngine:
     @staticmethod
@@ -48,27 +48,27 @@ class EmailEngine:
     @staticmethod
     def queue_reminder(recipient: str, reminder_type: str, details: Dict[str, Any]):
         """Place an email reminder in the background scheduler queue."""
-        subject = f"🔔 LifeOS Reminder: {reminder_type.replace('_', ' ').title()}"
+        subject = f"🔔 Atlas One Reminder: {reminder_type.replace('_', ' ').title()}"
         
         # Render HTML template dynamically
         html = f"""
         <html>
-            <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f0f1a; color: #e2e8f0; padding: 24px;">
-                <div style="max-width: 600px; margin: 0 auto; background-color: #16162a; border: 1px solid rgba(99,102,241,0.2); border-radius: 16px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #09090b; color: #e4e4e7; padding: 24px; margin: 0;">
+                <div style="max-width: 600px; margin: 0 auto; background-color: #121214; border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.5);">
                     <div style="text-align: center; margin-bottom: 24px;">
-                        <span style="font-size: 28px;">⚡</span>
-                        <h2 style="color: #818cf8; margin-top: 10px; margin-bottom: 0;">LifeOS Infinity</h2>
+                        <h2 style="color: #ffffff; margin-top: 10px; margin-bottom: 0; font-weight: 700; letter-spacing: -0.02em;">Atlas One</h2>
+                        <span style="font-size: 11px; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Personal Analytics & Predictive Insights</span>
                     </div>
-                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px;" />
-                    <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">
-                        Hi Bhanu, here is your scheduled notification tracker alert:
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.04); margin-bottom: 24px;" />
+                    <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa;">
+                        Hi Bhanu, here is your scheduled notification alert:
                     </p>
-                    <div style="background-color: rgba(99,102,241,0.05); border-left: 4px solid #6366f1; border-radius: 8px; padding: 18px; margin: 20px 0;">
-                        <h4 style="margin: 0 0 8px 0; color: #f1f5f9; font-size: 15px;">{reminder_type.replace('_', ' ').upper()} WARNING</h4>
-                        <p style="margin: 0; color: #94a3b8; font-size: 13px; line-height: 1.5;">{details.get("message", "")}</p>
+                    <div style="background-color: rgba(255,255,255,0.01); border-left: 3px solid #6366f1; border-radius: 6px; padding: 18px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.03);">
+                        <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 14px; font-weight: 600;">{reminder_type.replace('_', ' ').upper()} SYSTEM UPDATE</h4>
+                        <p style="margin: 0; color: #a1a1aa; font-size: 13px; line-height: 1.5;">{details.get("message", "")}</p>
                     </div>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 28px; text-align: center;">
-                        This is an automated system notification from your local LifeOS dashboard.
+                    <p style="font-size: 11px; color: #71717a; margin-top: 28px; text-align: center;">
+                        This is an automated system notification from your Atlas One dashboard.
                     </p>
                 </div>
             </body>

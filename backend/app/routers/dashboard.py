@@ -102,14 +102,21 @@ def get_dashboard_summary(
     # Longest streak across habits
     max_streak = max((h.streak for h in habits), default=0)
 
-    # Weekly study data (last 7 days)
+    # Weekly study data (last 7 days - Optimized: single query instead of N queries)
+    study_sessions = db.query(
+        StudySession.date,
+        func.sum(StudySession.hours).label("hours")
+    ).filter(
+        StudySession.user_id == current_user.id,
+        StudySession.date >= week_ago,
+        StudySession.date <= today,
+    ).group_by(StudySession.date).all()
+    study_map = {row.date: row.hours for row in study_sessions}
+
     weekly_study = []
     for i in range(6, -1, -1):
         d = today - timedelta(days=i)
-        hours = db.query(func.sum(StudySession.hours)).filter(
-            StudySession.user_id == current_user.id,
-            StudySession.date == d,
-        ).scalar() or 0.0
+        hours = study_map.get(d, 0.0) or 0.0
         weekly_study.append({"date": str(d), "hours": round(hours, 1)})
 
     # Recent fitness
@@ -190,7 +197,7 @@ def get_dashboard_summary(
         "gym_days_this_week": gym_days,
         "motivational_quote": quote,
         
-        # LifeOS Infinity Dynamic Indicators
+        # Atlas One Infinity Dynamic Indicators
         "today_score": today_score,
         "life_score": life_score,
         "discipline_score": discipline_score,

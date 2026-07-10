@@ -96,7 +96,7 @@ export default function SettingsPage() {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `bhanova_backup_${new Date().toISOString().slice(0, 10)}.json`)
+      link.setAttribute('download', `atlas_one_backup_${new Date().toISOString().slice(0, 10)}.json`)
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -133,7 +133,7 @@ export default function SettingsPage() {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `bhanova_${type}_export_${new Date().toISOString().slice(0, 10)}.csv`)
+      link.setAttribute('download', `atlas_one_${type}_export_${new Date().toISOString().slice(0, 10)}.csv`)
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                 className="input-field"
                 defaultValue="Asia/Kolkata"
                 onChange={e => {
-                  localStorage.setItem('bhanova_timezone', e.target.value)
+                  localStorage.setItem('atlas_one_timezone', e.target.value)
                   toast.success('Timezone updated!')
                 }}
                 style={{ background: '#111827', color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.08)' }}

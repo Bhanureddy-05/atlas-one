@@ -26,14 +26,21 @@ def get_analytics_overview(
     today = date.today()
     start = today - timedelta(days=days)
 
-    # Daily study hours
+    # Daily study hours (Optimized: single query instead of N queries)
+    study_sessions = db.query(
+        StudySession.date,
+        func.sum(StudySession.hours).label("hours")
+    ).filter(
+        StudySession.user_id == current_user.id,
+        StudySession.date >= start,
+        StudySession.date <= today,
+    ).group_by(StudySession.date).all()
+    study_map = {row.date: row.hours for row in study_sessions}
+
     study_data = []
     for i in range(days - 1, -1, -1):
         d = today - timedelta(days=i)
-        hours = db.query(func.sum(StudySession.hours)).filter(
-            StudySession.user_id == current_user.id,
-            StudySession.date == d,
-        ).scalar() or 0.0
+        hours = study_map.get(d, 0.0) or 0.0
         study_data.append({"date": str(d), "hours": round(hours, 1)})
 
     # DSA stats
@@ -49,18 +56,22 @@ def get_analytics_overview(
         for t in dsa_topics
     ]
 
-    # Calorie data
+    # Calorie data (Optimized: single query instead of 2N queries)
+    food_logs = db.query(
+        FoodLog.date,
+        func.sum(FoodLog.calories).label("calories"),
+        func.sum(FoodLog.protein_g).label("protein")
+    ).filter(
+        FoodLog.user_id == current_user.id,
+        FoodLog.date >= start,
+        FoodLog.date <= today,
+    ).group_by(FoodLog.date).all()
+    food_map = {row.date: (row.calories or 0.0, row.protein or 0.0) for row in food_logs}
+
     calorie_data = []
     for i in range(days - 1, -1, -1):
         d = today - timedelta(days=i)
-        cals = db.query(func.sum(FoodLog.calories)).filter(
-            FoodLog.user_id == current_user.id,
-            FoodLog.date == d,
-        ).scalar() or 0.0
-        protein = db.query(func.sum(FoodLog.protein_g)).filter(
-            FoodLog.user_id == current_user.id,
-            FoodLog.date == d,
-        ).scalar() or 0.0
+        cals, protein = food_map.get(d, (0.0, 0.0))
         calorie_data.append({"date": str(d), "calories": round(cals), "protein": round(protein, 1)})
 
     # Weight history
@@ -70,17 +81,25 @@ def get_analytics_overview(
     ).order_by(BodyMeasurement.date.asc()).all()
     weight_data = [{"date": str(m.date), "weight": m.weight_kg} for m in weight_history]
 
-    # Habit consistency
+    # Habit consistency (Optimized: single query instead of N queries)
     habits = db.query(Habit).filter(
         Habit.user_id == current_user.id, Habit.is_active == True
     ).all()
+    habit_ids = [h.id for h in habits]
+    
+    completed_logs = db.query(
+        HabitLog.habit_id,
+        func.count(HabitLog.id).label("count")
+    ).filter(
+        HabitLog.habit_id.in_(habit_ids),
+        HabitLog.date >= start,
+        HabitLog.completed == True
+    ).group_by(HabitLog.habit_id).all() if habit_ids else []
+    completed_map = {row.habit_id: row.count for row in completed_logs}
+
     habit_consistency = []
     for habit in habits:
-        logs_in_period = db.query(HabitLog).filter(
-            HabitLog.habit_id == habit.id,
-            HabitLog.date >= start,
-            HabitLog.completed == True,
-        ).count()
+        logs_in_period = completed_map.get(habit.id, 0)
         habit_consistency.append({
             "name": habit.name,
             "completed": logs_in_period,

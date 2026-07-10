@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bhanova-cache-v2';
+const CACHE_NAME = 'atlas-one-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

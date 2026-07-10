@@ -77,7 +77,7 @@ export default function KnowledgePage() {
       <div style={{ marginBottom: 28 }}>
         <h1 className="section-title">🧠 Personal Knowledge Vault</h1>
         <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>
-          Index ideas, research logs, quotes, and lecture notes. BHANOVA automatically compiles local AI summaries.
+          Index ideas, research logs, quotes, and lecture notes. Atlas One automatically compiles local AI summaries.
         </p>
       </div>
 

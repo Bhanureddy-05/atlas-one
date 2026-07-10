@@ -4,7 +4,7 @@ from typing import Optional
 
 # Simple, secure, zero-dependency symmetric encryption (fallback-safe XOR encryption encoded in base64)
 # In production, this can be swapped with cryptography.fernet.Fernet if desired.
-ENCRYPTION_KEY = os.getenv("LIFEOS_ENCRYPTION_KEY", "lifeos_master_secret_key_2026")
+ENCRYPTION_KEY = os.getenv("ATLAS_ONE_ENCRYPTION_KEY", "atlas_one_master_secret_key_2026")
 
 def encrypt_data(data: str, key: str = ENCRYPTION_KEY) -> str:
     """Encrypt plain text data into a base64 encoded cipher text."""

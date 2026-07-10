@@ -190,7 +190,7 @@ export default function ProjectsPage() {
                 <label style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6, display: 'block' }}>Project Name *</label>
                 <input
                   className="input-field"
-                  placeholder="e.g. BHANOVA Dashboard"
+                  placeholder="e.g. Atlas One Dashboard"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   required

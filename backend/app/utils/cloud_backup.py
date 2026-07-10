@@ -9,7 +9,7 @@ import logging
 
 from app.utils.security import encrypt_data
 
-logger = logging.getLogger("LifeOS-Backup")
+logger = logging.getLogger("Atlas-One-Backup")
 
 BACKUP_DIR = os.path.join("uploads", "backups")
 os.makedirs(BACKUP_DIR, exist_ok=True)
@@ -31,7 +31,7 @@ class S3Provider(CloudStorageProvider):
 
 class GoogleDriveProvider(CloudStorageProvider):
     def upload_file(self, local_path: str, remote_filename: str) -> bool:
-        logger.info(f"GoogleDrive: Uploaded archive '{remote_filename}' to 'LifeOS_Backups' root folder.")
+        logger.info(f"GoogleDrive: Uploaded archive '{remote_filename}' to 'Atlas_One_Backups' root folder.")
         return True
 
 
@@ -71,7 +71,7 @@ class BackupEngine:
         encrypted_str = encrypt_data(json_str)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_filename = f"lifeos_secure_backup_{timestamp}.json.gz"
+        backup_filename = f"atlas_one_secure_backup_{timestamp}.json.gz"
         dest_path = os.path.join(BACKUP_DIR, backup_filename)
 
         with gzip.open(dest_path, "wt", encoding="utf-8") as f:

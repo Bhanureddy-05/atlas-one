@@ -7,7 +7,7 @@ from app.models.user import User
 from app.models.google_calendar import GoogleCalendarCredential
 from app.utils.scheduler import scheduler
 
-logger = logging.getLogger("LifeOS-CalendarSync")
+logger = logging.getLogger("Atlas-One-CalendarSync")
 
 class CalendarSyncEngine:
     @staticmethod

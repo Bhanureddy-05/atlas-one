@@ -1,1 +1,1 @@
-# LifeOS Backend App Package
+# Atlas One Backend App Package

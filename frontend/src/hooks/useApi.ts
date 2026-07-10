@@ -497,3 +497,113 @@ export const useChangePassword = () => useMutation({
   onSuccess: () => toast.success('Password changed!'),
   onError: () => toast.error('Current password is incorrect'),
 })
+
+// ── Machine Learning & AI Analytics ──────────────────────────────────────────
+export const useMLPredictions = () => useQuery({
+  queryKey: ['ml', 'predictions'],
+  queryFn: () => api.get('/api/ml/predictions').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLForecast = () => useQuery({
+  queryKey: ['ml', 'forecast'],
+  queryFn: () => api.get('/api/ml/forecast').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLSentiment = () => useQuery({
+  queryKey: ['ml', 'sentiment'],
+  queryFn: () => api.get('/api/ml/sentiment').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLAnomalies = () => useQuery({
+  queryKey: ['ml', 'anomalies'],
+  queryFn: () => api.get('/api/ml/anomalies').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLInsights = () => useQuery({
+  queryKey: ['ml', 'insights'],
+  queryFn: () => api.get('/api/ml/insights').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLScores = () => useQuery({
+  queryKey: ['ml', 'scores'],
+  queryFn: () => api.get('/api/ml/scores').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLExplain = (predictionType = 'productivity') => useQuery({
+  queryKey: ['ml', 'explain', predictionType],
+  queryFn: () => api.get('/api/ml/explain', { params: { prediction_type: predictionType } }).then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLConfidence = () => useQuery({
+  queryKey: ['ml', 'confidence'],
+  queryFn: () => api.get('/api/ml/confidence').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLEvaluate = () => useQuery({
+  queryKey: ['ml', 'evaluate'],
+  queryFn: () => api.get('/api/ml/evaluate').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLFeatureImportance = () => useQuery({
+  queryKey: ['ml', 'feature-importance'],
+  queryFn: () => api.get('/api/ml/feature-importance').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLRecommendations = () => useQuery({
+  queryKey: ['ml', 'recommendations'],
+  queryFn: () => api.get('/api/ml/recommendations').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLSimulation = () => useMutation({
+  mutationFn: (data: any) => api.post('/api/ml/simulation', data).then(r => r.data),
+})
+
+export const useMLModelVersions = () => useQuery({
+  queryKey: ['ml', 'model-version'],
+  queryFn: () => api.get('/api/ml/model-version').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLSwitchVersion = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { version_tag: string }) => api.post('/api/ml/model-version', data).then(r => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ml'] })
+      toast.success('Active model version updated!')
+    }
+  })
+}
+
+export const useMLRisk = () => useQuery({
+  queryKey: ['ml', 'risk'],
+  queryFn: () => api.get('/api/ml/risk').then(r => r.data),
+  refetchOnWindowFocus: false,
+})
+
+export const useMLRetrain = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.post('/api/ml/retrain').then(r => r.data),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['ml'] })
+      toast.success(`Retraining complete! Saved version: ${data.version_tag}`)
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.detail || 'Retraining failed')
+    }
+  })
+}
+
+

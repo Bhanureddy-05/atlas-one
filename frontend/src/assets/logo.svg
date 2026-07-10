@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Minimal Geometric A (Deep Premium Red) -->
+  <path d="M 256,60 L 282,60 L 186,350 L 146,350 Z" fill="#DC2626" />
+  <path d="M 256,60 L 230,60 L 326,350 L 366,350 Z" fill="#DC2626" />
+  <path d="M 200,250 L 312,250 L 302,275 L 210,275 Z" fill="#DC2626" />
+  
+  <!-- Thin Orbital Ring (White) -->
+  <ellipse cx="256" cy="240" rx="200" ry="50" fill="none" stroke="#ffffff" stroke-width="6" transform="rotate(-15 256 240)" stroke-linecap="round" />
+  
+  <!-- Brand Name Text (White Typography) -->
+  <text x="256" y="425" font-family="'Inter', 'Outfit', system-ui, -apple-system, sans-serif" font-size="46" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="6">ATLAS ONE</text>
+  <!-- Tagline Text (Muted Gray Typography) -->
+  <text x="256" y="470" font-family="'Inter', 'Outfit', system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#94a3b8" text-anchor="middle" letter-spacing="3">PERSONAL ANALYTICS</text>
+</svg>

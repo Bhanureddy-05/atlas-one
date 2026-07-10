@@ -163,7 +163,7 @@ def get_coach_insights(
         recommendations.append("Start tracking study sessions and daily food intake to get tailored nutritional and productivity coaching.")
  
     return {
-        "coach_name": "BHANOVA AI Advisor",
+        "coach_name": "Atlas One AI Advisor",
         "generated_at": datetime.utcnow().isoformat(),
         "insights": insights,
         "strengths": strengths,
@@ -237,13 +237,13 @@ def chat_with_coach(
         )
     else:
         reply = (
-            "Hello Bhanu! I'm your BHANOVA AI Coach. Ask me to: "
+            "Hello Bhanu! I'm your Atlas One AI Coach. Ask me to: "
             "'Analyze my study habits', 'What habits are missing today?', 'Plan my day', 'Summarize my DSA', or 'Analyze my sleep'."
         )
         
     return {
         "reply": reply,
-        "coach_name": "BHANOVA AI Advisor",
+        "coach_name": "Atlas One AI Advisor",
         "timestamp": datetime.utcnow().isoformat()
     }
 

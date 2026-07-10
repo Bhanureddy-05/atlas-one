@@ -85,7 +85,7 @@ export const Page500 = () => (
 export const PageOffline = () => (
   <StatusPage
     title="You are Offline"
-    subtitle="Please check your internet connectivity. BHANOVA will automatically sync when connection returns."
+    subtitle="Please check your internet connectivity. Atlas One will automatically sync when connection returns."
     icon={WifiOff}
   />
 )
@@ -93,7 +93,7 @@ export const PageOffline = () => (
 export const PageMaintenance = () => (
   <StatusPage
     title="Under Scheduled Maintenance"
-    subtitle="We are performing system upgrades. BHANOVA will be back online shortly."
+    subtitle="We are performing system upgrades. Atlas One will be back online shortly."
     icon={Settings}
   />
 )

@@ -1,5 +1,5 @@
 """
-Seed data for LifeOS. Run this file directly to populate the database.
+Seed data for Atlas One. Run this file directly to populate the database.
 Usage: python -m app.seed
 """
 import os
@@ -29,15 +29,15 @@ def seed_data():
 
     try:
         # Check if already seeded
-        if db.query(User).filter(User.email == "bhanu@lifeos.app").first():
+        if db.query(User).filter(User.email == "bhanu@atlasone.app").first():
             return
 
         # Create demo user
         user = User(
-            email="bhanu@lifeos.app",
+            email="bhanu@atlasone.app",
             username="bhanu",
             full_name="Bhanu Pratap",
-            hashed_password=get_password_hash("lifeos2026"),
+            hashed_password=get_password_hash("atlas2026"),
             bio="Data Science aspirant | DSA learner | Fitness enthusiast",
             theme="dark",
         )
@@ -170,7 +170,7 @@ def seed_data():
             ("Movie Recommendation System", "Python, Collaborative Filtering", "in_progress", 65),
             ("Stock Price Predictor", "Python, LSTM, Keras", "in_progress", 40),
             ("NLP Sentiment Analyzer", "Python, NLTK, Transformers", "planning", 10),
-            ("LifeOS Dashboard", "React, FastAPI, PostgreSQL", "in_progress", 80),
+            ("Atlas One Dashboard", "React, FastAPI, PostgreSQL", "in_progress", 80),
         ]
         for name, tech, status, prog in projects_data:
             db.add(Project(
@@ -511,8 +511,8 @@ def seed_data():
 
         db.commit()
         print("SUCCESS: Seed data created successfully!")
-        print("   Email: bhanu@lifeos.app")
-        print("   Password: lifeos2026")
+        print("   Email: bhanu@atlasone.app")
+        print("   Password: atlas2026")
 
     except Exception as e:
         db.rollback()

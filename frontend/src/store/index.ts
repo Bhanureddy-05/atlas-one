@@ -29,13 +29,13 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       setAuth: (user, token) => {
-        localStorage.setItem('lifeos_token', token)
+        localStorage.setItem('atlas_one_token', token)
         set({ user, token, isAuthenticated: true })
       },
       logout: () => {
-        localStorage.removeItem('lifeos_token')
-        localStorage.removeItem('lifeos_user')
-        localStorage.setItem('lifeos-auth', JSON.stringify({ state: { user: null, token: null, isAuthenticated: false } }))
+        localStorage.removeItem('atlas_one_token')
+        localStorage.removeItem('atlas_one_user')
+        localStorage.setItem('atlas-one-auth', JSON.stringify({ state: { user: null, token: null, isAuthenticated: false } }))
         set({ user: null, token: null, isAuthenticated: false })
       },
       updateUser: (updates) =>
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>()(
         })),
     }),
     {
-      name: 'lifeos-auth',
+      name: 'atlas-one-auth',
       partialize: (state) => ({
         user: state.user,
         token: state.token,

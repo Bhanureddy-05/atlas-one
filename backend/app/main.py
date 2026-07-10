@@ -9,7 +9,7 @@ from app.routers import (
     singing, reading, goals, analytics, reports,
     daily_planner, settings, export, coach, journal,
     finance, career, knowledge, gamification, voice_journal, progress_photo,
-    smartwatch, google_calendar, sharing
+    smartwatch, google_calendar, sharing, ml_analytics
 )
 from app.seed import seed_data
 
@@ -34,8 +34,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="LifeOS API",
-    description="AI Powered Personal Growth & Productivity Dashboard API",
+    title="Atlas One API",
+    description="Atlas One Personal Analytics & Predictive Insights API",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -46,7 +46,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://bhanova.vercel.app",
+        "https://atlas-one.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -84,13 +84,19 @@ app.include_router(progress_photo.router, prefix="/api/progress-photo", tags=["p
 app.include_router(smartwatch.router, prefix="/api/smartwatch", tags=["smartwatch"])
 app.include_router(google_calendar.router, prefix="/api/calendar", tags=["calendar"])
 app.include_router(sharing.router, prefix="/api/sharing", tags=["sharing"])
+app.include_router(ml_analytics.router, prefix="/api/ml", tags=["ml"])
 
 
 @app.get("/")
 def root():
-    return {"message": "LifeOS API is running", "version": "1.0.0"}
+    return {"message": "Atlas One API is running", "version": "1.0.0"}
 
 
 @app.get("/health")
 def health():
+    return {"status": "healthy"}
+
+
+@app.get("/api/health")
+def api_health():
     return {"status": "healthy"}

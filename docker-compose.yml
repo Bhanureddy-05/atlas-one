@@ -3,12 +3,12 @@ version: "3.9"
 services:
   db:
     image: postgres:15-alpine
-    container_name: lifeos_db
+    container_name: atlas_one_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: lifeos
+      POSTGRES_DB: atlas_one
     ports:
       - "5432:5432"
     volumes:
@@ -18,10 +18,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: lifeos_backend
+    container_name: atlas_one_backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/lifeos
+      DATABASE_URL: postgresql://postgres:password@db:5432/atlas_one
       SECRET_KEY: super-secret-jwt-key-change-in-production-2026
       ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 10080
@@ -36,7 +36,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: lifeos_frontend
+    container_name: atlas_one_frontend
     restart: unless-stopped
     ports:
       - "3000:80"

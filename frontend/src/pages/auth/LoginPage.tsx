@@ -5,6 +5,7 @@ import { useLogin } from '@/hooks/useApi'
 import { useAuthStore } from '@/store'
 import toast from 'react-hot-toast'
 import { Lock, Mail, ShieldAlert } from 'lucide-react'
+import logo from '@/assets/logo.svg'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -46,8 +47,8 @@ export default function LoginPage() {
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <img
-            src="/logo.png"
-            alt="BHANOVA Logo"
+            src={logo}
+            alt="Atlas One Logo"
             style={{
               width: 64, height: 64, borderRadius: 12,
               margin: '0 auto 16px',
@@ -55,7 +56,7 @@ export default function LoginPage() {
             }}
           />
           <h2 style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 800, fontSize: 24, color: '#f1f5f9' }}>Welcome Back</h2>
-          <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>Sign in to continue to BHANOVA</p>
+          <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>Sign in to continue to Atlas One</p>
         </div>
 
         <form onSubmit={handleSubmit}>

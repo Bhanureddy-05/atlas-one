@@ -5,7 +5,7 @@ from typing import Callable, Any, Dict, List, Optional
 import logging
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("LifeOS-Scheduler")
+logger = logging.getLogger("Atlas-One-Scheduler")
 
 class BackgroundScheduler:
     def __init__(self):

@@ -248,7 +248,7 @@ export default function VoicePage() {
       <div style={{ marginBottom: 28 }}>
         <h1 className="section-title">🎙️ AI Voice Center</h1>
         <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>
-          Control BHANOVA with voice commands, record transcripted voice diaries, and listen to morning AI briefings.
+          Control Atlas One with voice commands, record transcripted voice diaries, and listen to morning AI briefings.
         </p>
       </div>
 

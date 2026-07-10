@@ -13,7 +13,7 @@ interface Message {
 export default function AIChatPage() {
   const [activeTab, setActiveTab] = useState<'chat' | 'briefing' | 'weekly' | 'monthly'>('chat')
   const [messages, setMessages] = useState<Message[]>([
-    { sender: 'ai', text: "Hello Bhanu! I'm your BHANOVA AI Coach. How can I optimize your performance today?", timestamp: new Date().toLocaleTimeString() }
+    { sender: 'ai', text: "Hello Bhanu! I'm your Atlas One AI Coach. How can I optimize your performance today?", timestamp: new Date().toLocaleTimeString() }
   ])
   const [inputVal, setInputVal] = useState('')
   const [loading, setLoading] = useState(false)

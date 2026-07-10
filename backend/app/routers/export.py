@@ -155,7 +155,7 @@ def export_backup(
     return StreamingResponse(
         StringIO(serialized),
         media_type="application/json",
-        headers={"Content-Disposition": f"attachment; filename=lifeos_backup_{datetime.now().strftime('%Y%m%d')}.json"}
+        headers={"Content-Disposition": f"attachment; filename=atlas_one_backup_{datetime.now().strftime('%Y%m%d')}.json"}
     )
 
 @router.post("/restore")
@@ -445,5 +445,5 @@ def export_csv(
     return StreamingResponse(
         output,
         media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename=lifeos_{data_type}_{datetime.now().strftime('%Y%m%d')}.csv"}
+        headers={"Content-Disposition": f"attachment; filename=atlas_one_{data_type}_{datetime.now().strftime('%Y%m%d')}.csv"}
     )
