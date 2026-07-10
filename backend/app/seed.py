@@ -28,8 +28,12 @@ def seed_data():
     db: Session = SessionLocal()
 
     try:
-        # Check if already seeded
-        if db.query(User).filter(User.email == "bhanu@atlasone.app").first():
+        # Check if already seeded by username or email to make it idempotent
+        existing_user = db.query(User).filter(
+            (User.email == "bhanu@atlasone.app") | (User.username == "bhanu")
+        ).first()
+        if existing_user:
+            print("Default seed user 'bhanu' or email 'bhanu@atlasone.app' already exists. Skipping data seeding.")
             return
 
         # Create demo user
@@ -517,7 +521,6 @@ def seed_data():
     except Exception as e:
         db.rollback()
         print(f"ERROR: Seed error: {e}")
-        raise
     finally:
         db.close()
 
