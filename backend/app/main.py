@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 
 from app.database import engine, Base
 from app.routers import (
@@ -40,21 +41,39 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app = FastAPI(
+    title="Atlas One API",
+    description="Atlas One Personal Analytics & Predictive Insights API",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+
+# -----------------------------
+# CORS Configuration
+# -----------------------------
+
+origins = [
+    # Local Development
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+
+    # Production Frontends
+    "https://atlas-one-nine.vercel.app",
+    "https://bhanova.vercel.app",
+]
+
+# Allow additional frontend URL from Render Environment Variable
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url and frontend_url not in origins:
+    origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        # Local
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-
-        # Production
-        "https://bhanova.vercel.app",
-        "https://atlas-one-api-y-bhanu-prakash-reddy.vercel.app",
-        "https://atlas-one-k313tidh0-y-bhanu-prakash-reddy.vercel.app",
-    ],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
