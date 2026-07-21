@@ -41,13 +41,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app = FastAPI(
-    title="Atlas One API",
-    description="Atlas One Personal Analytics & Predictive Insights API",
-    version="1.0.0",
-    lifespan=lifespan,
-)
-
 # -----------------------------
 # CORS Configuration
 # -----------------------------

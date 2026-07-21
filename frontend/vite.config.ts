@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -19,6 +20,27 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+      },
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react'
+            }
+            if (id.includes('lucide-react') || id.includes('framer-motion') || id.includes('recharts')) {
+              return 'vendor-ui'
+            }
+            if (id.includes('@tanstack') || id.includes('axios') || id.includes('zustand')) {
+              return 'vendor-state'
+            }
+          }
+        },
       },
     },
   },

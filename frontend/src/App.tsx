@@ -70,7 +70,7 @@ const isLocal = import.meta.env.DEV ||
                   window.location.hostname === '127.0.0.1' || 
                   window.location.hostname === '[::1]'))
 
-const BASE_URL = isLocal ? 'http://127.0.0.1:8000' : (import.meta.env.VITE_API_URL || '/api')
+const BASE_URL = isLocal ? 'http://127.0.0.1:8000' : (import.meta.env.VITE_API_URL || 'https://bhanova.onrender.com')
 const HEALTH_URL = BASE_URL.endsWith('/') ? `${BASE_URL}health` : `${BASE_URL}/health`
 
 export default function App() {
@@ -103,12 +103,15 @@ export default function App() {
       try {
         const res = await fetch(HEALTH_URL)
         if (res.ok) {
-          setHealthStatus('ready')
-          clearInterval(interval)
-          clearInterval(dotInterval)
-        } else {
-          setHealthStatus('waking')
+          const data = await res.json().catch(() => null)
+          if (data && (data.status === 'healthy' || data.status === 'ok' || data.message)) {
+            setHealthStatus('ready')
+            clearInterval(interval)
+            clearInterval(dotInterval)
+            return
+          }
         }
+        setHealthStatus('waking')
       } catch (err) {
         setHealthStatus('waking')
       }
