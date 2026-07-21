@@ -80,6 +80,7 @@ export default function App() {
     isLocal ? 'ready' : 'checking'
   )
   const [dots, setDots] = React.useState('.')
+  const attemptRef = React.useRef(0)
 
   console.log('--- ATLAS ONE DEBUG ---')
   console.log('import.meta.env.DEV:', import.meta.env.DEV)
@@ -100,8 +101,16 @@ export default function App() {
     }, 500)
 
     const checkHealth = async () => {
+      attemptRef.current += 1
+      // After 25 attempts (~75s), let the app through anyway
+      if (attemptRef.current > 25) {
+        setHealthStatus('ready')
+        clearInterval(interval)
+        clearInterval(dotInterval)
+        return
+      }
       try {
-        const res = await fetch(HEALTH_URL)
+        const res = await fetch(HEALTH_URL, { signal: AbortSignal.timeout(8000) })
         if (res.ok) {
           const data = await res.json().catch(() => null)
           if (data && (data.status === 'healthy' || data.status === 'ok' || data.message)) {
@@ -112,7 +121,7 @@ export default function App() {
           }
         }
         setHealthStatus('waking')
-      } catch (err) {
+      } catch {
         setHealthStatus('waking')
       }
     }
@@ -182,9 +191,14 @@ export default function App() {
               color: '#DC2626',
               letterSpacing: '0.05em'
             }}>
-              CONNECTING{dots}
+              {healthStatus === 'waking' ? `WAKING UP${dots}` : `CONNECTING${dots}`}
             </span>
           </div>
+          {healthStatus === 'waking' && (
+            <p style={{ fontSize: '11px', color: '#52525b', marginTop: 12, lineHeight: 1.6 }}>
+              Backend is starting up on Render's free tier.<br />This takes ~30–60 seconds on first load.
+            </p>
+          )}
         </div>
       </div>
     )
