@@ -11,11 +11,9 @@ const BASE_URL = isLocal
   ? "http://127.0.0.1:8000"
   : (import.meta.env.VITE_API_URL || "https://bhanova.onrender.com");
 
-console.log("API Base URL:", BASE_URL);
-
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 30000, // 30s — accounts for Render cold start on first authenticated request
   headers: {
     "Content-Type": "application/json",
   },

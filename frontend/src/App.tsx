@@ -36,9 +36,48 @@ const GamificationPage = lazy(() => import('@/pages/GamificationPage'))
 const AIChatPage = lazy(() => import('@/pages/AIChatPage'))
 const MLDashboardPage = lazy(() => import('@/pages/MLDashboardPage'))
 
-// Status Pages
+// Status Pages — not lazy, needed for error states
 import { Page404, Page403, Page500, PageOffline } from '@/pages/StatusPages'
 
+// ── Error Boundary ─────────────────────────────────────────────────────────────
+interface ErrorBoundaryState { hasError: boolean; error?: Error }
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          minHeight: '100vh', background: '#09090b', color: '#f4f4f5',
+          fontFamily: 'Inter, system-ui, sans-serif', padding: 24, textAlign: 'center'
+        }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Something went wrong</h2>
+          <p style={{ color: '#71717a', fontSize: 13, marginBottom: 20 }}>
+            {this.state.error?.message || 'An unexpected error occurred.'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              background: '#ffffff', color: '#09090b', border: 'none',
+              padding: '8px 20px', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 13
+            }}
+          >
+            Reload Page
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
+// ── Route Guards ───────────────────────────────────────────────────────────────
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
@@ -64,59 +103,55 @@ function PageLoader() {
   )
 }
 
-const isLocal = import.meta.env.DEV || 
-                (typeof window !== 'undefined' && 
-                 (window.location.hostname === 'localhost' || 
-                  window.location.hostname === '127.0.0.1' || 
-                  window.location.hostname === '[::1]'))
+// ── Backend URL resolution ─────────────────────────────────────────────────────
+// Evaluated once at module load — safe because import.meta.env is static at build time
+const isLocal = import.meta.env.DEV ||
+  (typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '[::1]'))
 
-const BASE_URL = isLocal ? 'http://127.0.0.1:8000' : (import.meta.env.VITE_API_URL || 'https://bhanova.onrender.com')
-const HEALTH_URL = BASE_URL.endsWith('/') ? `${BASE_URL}health` : `${BASE_URL}/health`
+const BASE_URL = isLocal
+  ? 'http://127.0.0.1:8000'
+  : (import.meta.env.VITE_API_URL || 'https://bhanova.onrender.com')
 
+const HEALTH_URL = `${BASE_URL.replace(/\/$/, '')}/health`
+
+// ── App ────────────────────────────────────────────────────────────────────────
 export default function App() {
   useNotifications()
-  
+
   const [healthStatus, setHealthStatus] = React.useState<'checking' | 'waking' | 'ready'>(
     isLocal ? 'ready' : 'checking'
   )
   const [dots, setDots] = React.useState('.')
   const attemptRef = React.useRef(0)
-
-  console.log('--- ATLAS ONE DEBUG ---')
-  console.log('import.meta.env.DEV:', import.meta.env.DEV)
-  console.log('import.meta.env.MODE:', import.meta.env.MODE)
-  console.log('isLocal:', isLocal)
-  console.log('healthStatus:', healthStatus)
-  console.log('BASE_URL:', BASE_URL)
-  console.log('HEALTH_URL:', HEALTH_URL)
+  const intervalsRef = React.useRef<{ poll?: ReturnType<typeof setInterval>; dots?: ReturnType<typeof setInterval> }>({})
 
   React.useEffect(() => {
     if (isLocal) return
 
-    let interval: any
-    let dotInterval: any
-    
-    dotInterval = setInterval(() => {
+    intervalsRef.current.dots = setInterval(() => {
       setDots(d => d.length >= 3 ? '.' : d + '.')
     }, 500)
 
     const checkHealth = async () => {
       attemptRef.current += 1
-      // After 25 attempts (~75s), let the app through anyway
-      if (attemptRef.current > 25) {
+      // After 30 attempts (~90s) let the app through regardless — Render cold start max
+      if (attemptRef.current > 30) {
         setHealthStatus('ready')
-        clearInterval(interval)
-        clearInterval(dotInterval)
+        clearInterval(intervalsRef.current.poll)
+        clearInterval(intervalsRef.current.dots)
         return
       }
       try {
         const res = await fetch(HEALTH_URL, { signal: AbortSignal.timeout(8000) })
         if (res.ok) {
           const data = await res.json().catch(() => null)
-          if (data && (data.status === 'healthy' || data.status === 'ok' || data.message)) {
+          if (data?.status === 'healthy' || data?.status === 'ok' || data?.message) {
             setHealthStatus('ready')
-            clearInterval(interval)
-            clearInterval(dotInterval)
+            clearInterval(intervalsRef.current.poll)
+            clearInterval(intervalsRef.current.dots)
             return
           }
         }
@@ -127,14 +162,13 @@ export default function App() {
     }
 
     checkHealth()
-    // Poll every 3 seconds
-    interval = setInterval(checkHealth, 3000)
+    intervalsRef.current.poll = setInterval(checkHealth, 3000)
 
     return () => {
-      clearInterval(interval)
-      clearInterval(dotInterval)
+      clearInterval(intervalsRef.current.poll)
+      clearInterval(intervalsRef.current.dots)
     }
-  }, [isLocal])
+  }, [])
 
   if (healthStatus !== 'ready') {
     return (
@@ -147,24 +181,19 @@ export default function App() {
           background: '#121214', padding: '48px 32px', borderRadius: '18px',
           border: '1px solid rgba(255,255,255,0.04)', maxWidth: '460px', width: '100%',
           boxShadow: '0 20px 48px rgba(0, 0, 0, 0.6)', display: 'flex', flexDirection: 'column',
-          alignItems: 'center', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)'
+          alignItems: 'center'
         }}>
           <img
             src={logo}
             alt="Atlas One Logo"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'
-            }}
-            style={{
-              width: 140,
-              marginBottom: 24, display: 'block'
-            }}
+            onError={(e) => { e.currentTarget.style.display = 'none' }}
+            style={{ width: 140, marginBottom: 24, display: 'block' }}
           />
-          
+
           <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 8, color: '#ffffff', letterSpacing: '-0.02em' }}>
             Atlas One
           </h1>
-          
+
           <p style={{ color: '#94a3b8', fontSize: '14px', fontWeight: 500, lineHeight: 1.5, marginBottom: 24 }}>
             Personal Analytics & Predictive Insights
           </p>
@@ -179,21 +208,18 @@ export default function App() {
               borderTopColor: '#DC2626'
             }} />
           </div>
-          
+
           <div style={{
             fontSize: '12px', color: '#71717a', background: 'rgba(220, 38, 38, 0.02)',
             padding: '12px 18px', borderRadius: '12px', border: '1px solid rgba(220, 38, 38, 0.08)',
             width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
           }}>
             <span>Connection Status:</span>
-            <span style={{ 
-              fontWeight: 700, 
-              color: '#DC2626',
-              letterSpacing: '0.05em'
-            }}>
+            <span style={{ fontWeight: 700, color: '#DC2626', letterSpacing: '0.05em' }}>
               {healthStatus === 'waking' ? `WAKING UP${dots}` : `CONNECTING${dots}`}
             </span>
           </div>
+
           {healthStatus === 'waking' && (
             <p style={{ fontSize: '11px', color: '#52525b', marginTop: 12, lineHeight: 1.6 }}>
               Backend is starting up on Render's free tier.<br />This takes ~30–60 seconds on first load.
@@ -205,45 +231,48 @@ export default function App() {
   }
 
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        <Route path="/403" element={<Page403 />} />
-        <Route path="/500" element={<Page500 />} />
-        <Route path="/offline" element={<PageOffline />} />
-        
-        <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-          <Route index element={<DashboardPage />} />
-          <Route path="planner" element={<DailyPlannerPage />} />
-          <Route path="habits" element={<HabitsPage />} />
-          <Route path="study" element={<StudyPage />} />
-          <Route path="dsa" element={<DSAPage />} />
-          <Route path="interview" element={<InterviewPrepPage />} />
-          <Route path="projects" element={<ProjectsPage />} />
-          <Route path="fitness" element={<FitnessPage />} />
-          <Route path="diet" element={<DietPage />} />
-          <Route path="sleep" element={<SleepPage />} />
-          <Route path="singing" element={<SingingPage />} />
-          <Route path="reading" element={<ReadingPage />} />
-          <Route path="goals" element={<GoalsPage />} />
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="journal" element={<JournalPage />} />
-          <Route path="finance" element={<FinancePage />} />
-          <Route path="masters" element={<MastersPage />} />
-          <Route path="placement" element={<PlacementPage />} />
-          <Route path="knowledge" element={<KnowledgePage />} />
-          <Route path="voice" element={<VoicePage />} />
-          <Route path="timeline" element={<TimelinePage />} />
-          <Route path="sharing" element={<SharingPage />} />
-          <Route path="gamification" element={<GamificationPage />} />
-          <Route path="ai-chat" element={<AIChatPage />} />
-          <Route path="ai-dashboard" element={<MLDashboardPage />} />
-        </Route>
-        <Route path="*" element={<Page404 />} />
-      </Routes>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+          <Route path="/403" element={<Page403 />} />
+          <Route path="/500" element={<Page500 />} />
+          <Route path="/offline" element={<PageOffline />} />
+
+          <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route index element={<DashboardPage />} />
+            <Route path="planner" element={<DailyPlannerPage />} />
+            <Route path="habits" element={<HabitsPage />} />
+            <Route path="study" element={<StudyPage />} />
+            <Route path="dsa" element={<DSAPage />} />
+            <Route path="interview" element={<InterviewPrepPage />} />
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="fitness" element={<FitnessPage />} />
+            <Route path="diet" element={<DietPage />} />
+            <Route path="sleep" element={<SleepPage />} />
+            <Route path="singing" element={<SingingPage />} />
+            <Route path="reading" element={<ReadingPage />} />
+            <Route path="goals" element={<GoalsPage />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="journal" element={<JournalPage />} />
+            <Route path="finance" element={<FinancePage />} />
+            <Route path="masters" element={<MastersPage />} />
+            <Route path="placement" element={<PlacementPage />} />
+            <Route path="knowledge" element={<KnowledgePage />} />
+            <Route path="voice" element={<VoicePage />} />
+            <Route path="timeline" element={<TimelinePage />} />
+            <Route path="sharing" element={<SharingPage />} />
+            <Route path="gamification" element={<GamificationPage />} />
+            <Route path="ai-chat" element={<AIChatPage />} />
+            <Route path="ai-dashboard" element={<MLDashboardPage />} />
+          </Route>
+
+          <Route path="*" element={<Page404 />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

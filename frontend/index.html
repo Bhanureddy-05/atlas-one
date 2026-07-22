@@ -12,25 +12,20 @@
   <meta name="theme-color" content="#6366f1" />
   <title>Atlas One</title>
   <script>
-    // Clear legacy service worker registrations and caches to prevent MIME type asset mismatch loops
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        for (let reg of regs) {
-          reg.unregister().then(() => {
-            console.log('Unregistered SW registration:', reg.scope);
-          });
-        }
-      });
-    }
-    if ('caches' in window) {
-      caches.keys().then(keys => {
-        for (let key of keys) {
-          caches.delete(key).then(() => {
-            console.log('Purged legacy cache:', key);
-          });
-        }
-      });
-    }
+    // Unregister ALL service workers and purge ALL caches synchronously before any module loads.
+    // This prevents stale SW from intercepting JS chunk requests with wrong MIME type.
+    (function () {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          regs.forEach(function (reg) { reg.unregister(); });
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function (keys) {
+          keys.forEach(function (key) { caches.delete(key); });
+        });
+      }
+    })();
   </script>
 </head>
 

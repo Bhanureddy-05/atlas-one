@@ -19,19 +19,22 @@ from app.seed import seed_data
 async def lifespan(app: FastAPI):
     # Create all tables
     Base.metadata.create_all(bind=engine)
+
+    # Seed only runs if the demo user doesn't exist — safe to call on every startup
     try:
         seed_data()
     except Exception as e:
-        print(f"Error seeding database: {e}")
-    
-    # Start scheduler daemon
+        print(f"[Atlas One] Seed skipped or failed: {e}")
+
+    # Start background scheduler
     from app.utils.scheduler import scheduler
     scheduler.start()
-    
+    print("[Atlas One] Application startup complete.")
+
     yield
-    
-    # Stop scheduler daemon
+
     scheduler.stop()
+    print("[Atlas One] Application shutdown complete.")
 
 
 app = FastAPI(
@@ -48,16 +51,20 @@ app = FastAPI(
 origins = [
     # Local Development
     "http://localhost:3000",
+
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 
-    # Production Frontends
+    # Production
     "https://atlas-one-nine.vercel.app",
     "https://bhanova.vercel.app",
 ]
-
 # Allow additional frontend URL from Render Environment Variable
 frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url and frontend_url not in origins:
